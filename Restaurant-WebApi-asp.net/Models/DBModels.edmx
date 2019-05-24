@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="RestaurantDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="customerID" />
+          </Key>
+          <Property Name="customerID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="item">
+          <Key>
+            <PropertyRef Name="itemID" />
+          </Key>
+          <Property Name="itemID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nchar" MaxLength="50" />
+          <Property Name="price" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="order">
+          <Key>
+            <PropertyRef Name="orderID" />
+          </Key>
+          <Property Name="orderID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="orderNo" Type="varchar" MaxLength="50" />
+          <Property Name="customerID" Type="int" />
+          <Property Name="pMethod" Type="varchar" MaxLength="50" />
+          <Property Name="gTotal" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="orderItems">
+          <Key>
+            <PropertyRef Name="orderItemID" />
+          </Key>
+          <Property Name="orderItemID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="orderID" Type="bigint" />
+          <Property Name="itemID" Type="int" />
+          <Property Name="quantity" Type="int" />
+        </EntityType>
+        <Association Name="FK_order_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="order" Type="Self.order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="customerID" />
+            </Principal>
+            <Dependent Role="order">
+              <PropertyRef Name="customerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_orderItems_item">
+          <End Role="item" Type="Self.item" Multiplicity="0..1" />
+          <End Role="orderItems" Type="Self.orderItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="item">
+              <PropertyRef Name="itemID" />
+            </Principal>
+            <Dependent Role="orderItems">
+              <PropertyRef Name="itemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_orderItems_order">
+          <End Role="order" Type="Self.order" Multiplicity="0..1" />
+          <End Role="orderItems" Type="Self.orderItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order">
+              <PropertyRef Name="orderID" />
+            </Principal>
+            <Dependent Role="orderItems">
+              <PropertyRef Name="orderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="RestaurantDBModelStoreContainer">
+          <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="item" EntityType="Self.item" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="order" EntityType="Self.order" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="orderItems" EntityType="Self.orderItems" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_order_Customer" Association="Self.FK_order_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="order" EntitySet="order" />
+          </AssociationSet>
+          <AssociationSet Name="FK_orderItems_item" Association="Self.FK_orderItems_item">
+            <End Role="item" EntitySet="item" />
+            <End Role="orderItems" EntitySet="orderItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_orderItems_order" Association="Self.FK_orderItems_order">
+            <End Role="order" EntitySet="order" />
+            <End Role="orderItems" EntitySet="orderItems" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="RestaurantDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="customerID" />
+          </Key>
+          <Property Name="customerID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="orders" Relationship="Self.FK_order_Customer" FromRole="Customer" ToRole="order" />
+        </EntityType>
+        <EntityType Name="item">
+          <Key>
+            <PropertyRef Name="itemID" />
+          </Key>
+          <Property Name="itemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+          <Property Name="price" Type="Decimal" Precision="18" Scale="2" />
+          <NavigationProperty Name="orderItems" Relationship="Self.FK_orderItems_item" FromRole="item" ToRole="orderItems" />
+        </EntityType>
+        <EntityType Name="order">
+          <Key>
+            <PropertyRef Name="orderID" />
+          </Key>
+          <Property Name="orderID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="orderNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="customerID" Type="Int32" />
+          <Property Name="pMethod" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="gTotal" Type="Decimal" Precision="18" Scale="2" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK_order_Customer" FromRole="order" ToRole="Customer" />
+          <NavigationProperty Name="orderItems" Relationship="Self.FK_orderItems_order" FromRole="order" ToRole="orderItems" />
+        </EntityType>
+        <EntityType Name="orderItem">
+          <Key>
+            <PropertyRef Name="orderItemID" />
+          </Key>
+          <Property Name="orderItemID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="orderID" Type="Int64" />
+          <Property Name="itemID" Type="Int32" />
+          <Property Name="quantity" Type="Int32" />
+          <NavigationProperty Name="item" Relationship="Self.FK_orderItems_item" FromRole="orderItems" ToRole="item" />
+          <NavigationProperty Name="order" Relationship="Self.FK_orderItems_order" FromRole="orderItems" ToRole="order" />
+        </EntityType>
+        <Association Name="FK_order_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+          <End Role="order" Type="Self.order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="customerID" />
+            </Principal>
+            <Dependent Role="order">
+              <PropertyRef Name="customerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_orderItems_item">
+          <End Role="item" Type="Self.item" Multiplicity="0..1" />
+          <End Role="orderItems" Type="Self.orderItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="item">
+              <PropertyRef Name="itemID" />
+            </Principal>
+            <Dependent Role="orderItems">
+              <PropertyRef Name="itemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_orderItems_order">
+          <End Role="order" Type="Self.order" Multiplicity="0..1" />
+          <End Role="orderItems" Type="Self.orderItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="order">
+              <PropertyRef Name="orderID" />
+            </Principal>
+            <Dependent Role="orderItems">
+              <PropertyRef Name="orderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DBModel" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Customers" EntityType="Self.Customer" />
+          <EntitySet Name="items" EntityType="Self.item" />
+          <EntitySet Name="orders" EntityType="Self.order" />
+          <EntitySet Name="orderItems" EntityType="Self.orderItem" />
+          <AssociationSet Name="FK_order_Customer" Association="Self.FK_order_Customer">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="order" EntitySet="orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_orderItems_item" Association="Self.FK_orderItems_item">
+            <End Role="item" EntitySet="items" />
+            <End Role="orderItems" EntitySet="orderItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_orderItems_order" Association="Self.FK_orderItems_order">
+            <End Role="order" EntitySet="orders" />
+            <End Role="orderItems" EntitySet="orderItems" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="RestaurantDBModelStoreContainer" CdmEntityContainer="DBModel">
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="RestaurantDBModel.Customer">
+              <MappingFragment StoreEntitySet="Customer">
+                <ScalarProperty Name="customerID" ColumnName="customerID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="items">
+            <EntityTypeMapping TypeName="RestaurantDBModel.item">
+              <MappingFragment StoreEntitySet="item">
+                <ScalarProperty Name="itemID" ColumnName="itemID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="price" ColumnName="price" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="orders">
+            <EntityTypeMapping TypeName="RestaurantDBModel.order">
+              <MappingFragment StoreEntitySet="order">
+                <ScalarProperty Name="orderID" ColumnName="orderID" />
+                <ScalarProperty Name="orderNo" ColumnName="orderNo" />
+                <ScalarProperty Name="customerID" ColumnName="customerID" />
+                <ScalarProperty Name="pMethod" ColumnName="pMethod" />
+                <ScalarProperty Name="gTotal" ColumnName="gTotal" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="orderItems">
+            <EntityTypeMapping TypeName="RestaurantDBModel.orderItem">
+              <MappingFragment StoreEntitySet="orderItems">
+                <ScalarProperty Name="orderItemID" ColumnName="orderItemID" />
+                <ScalarProperty Name="orderID" ColumnName="orderID" />
+                <ScalarProperty Name="itemID" ColumnName="itemID" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
